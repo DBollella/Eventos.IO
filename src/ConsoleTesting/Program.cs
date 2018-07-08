@@ -7,12 +7,13 @@ namespace ConsoleTesting
     {
         static void Main(string[] args)
         {
+            const int Valor = 0;
             var evento = new Evento(
                      "Nome do Evento",
                      DateTime.Now,
                      DateTime.Now,
-                     false,
-                     50,
+                     true,
+                     Valor,
                      false,
                      "DBSF");
 

@@ -1,6 +1,7 @@
 ﻿using Eventos.IO.Domain.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Eventos.IO.Domain.Models
@@ -25,11 +26,21 @@ namespace Eventos.IO.Domain.Models
             Online = online;
             NomeEmpresa = nomeEmpresa;
 
+            ErrosValidacao = new Dictionary<string, string>();
+
             if (nome.Length < 3)
-                throw new ArgumentException("O nome do evento deve ter mais que tres caracteres");
+                ErrosValidacao.Add("Name", "O nome do evento deve ter mais que tres caracteres.");
 
             if (gratuito && valor != 0)
-                throw new ArgumentException("Não pode ter valor se gratuito");
+                ErrosValidacao.Add("valor", "Para evento gratuito o valor deve ser maior que zero.");           
+
+            if (!EhValido())
+            {
+                foreach (var erro in ErrosValidacao)
+                {
+                    Console.WriteLine(erro);
+                }
+            }
         }
 
         public string Nome { get; private set; }
@@ -45,5 +56,10 @@ namespace Eventos.IO.Domain.Models
         public ICollection<Tags> Tags { get; private set; }
         public Endereco Endereco { get; private set; }
         public Organizador Organizador { get; private set; }
+        public Dictionary<string, string> ErrosValidacao { get; private set; }
+
+        public bool EhValido() {
+            return !ErrosValidacao.Any();
+        }
     }
 }
