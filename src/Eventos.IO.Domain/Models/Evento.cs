@@ -54,6 +54,8 @@ namespace Eventos.IO.Domain.Models
         {
             ValidarNome();
             ValidarValor();
+            ValidarLocal();
+            ValidarNomeEmpresa();
         }
 
 
@@ -63,6 +65,7 @@ namespace Eventos.IO.Domain.Models
                 .NotEmpty().WithMessage("O nome do evento precisa ser fornecido")
                 .Length(2, 150).WithMessage("O nome do evento precisa ter entre 2 e 150 caracteres");
         }
+
         private void ValidarValor()
         {
             if (!Gratuito)
@@ -79,6 +82,7 @@ namespace Eventos.IO.Domain.Models
             }
             
         }
+
         private void ValidarData()
         {
             RuleFor(c => c.DataInicio)
@@ -88,6 +92,26 @@ namespace Eventos.IO.Domain.Models
             RuleFor(c => c.DataInicio)
                 .LessThan(DateTime.Now)
                 .WithMessage("A data de inicio não deve ser menor que a data atual");
+        }
+
+        private void ValidarLocal()
+        {
+            if (Online)            
+                RuleFor(c => c.Endereco)
+                    .Null().When(c => c.Online)
+                    .WithMessage("O evento não deve possuir um endereço se for online");
+
+            if (!Online)
+                RuleFor(c => c.Endereco)
+                    .Null().When(c => c.Online == false)
+                    .WithMessage("O evento deve possuir um endereço");  
+        }
+
+        private void ValidarNomeEmpresa()
+        {
+            RuleFor(c => c.NomeEmpresa)
+                    .NotEmpty().WithMessage("O nome do organizador precisa ser fornecido")
+                    .Length(2, 150).WithMessage("O nome do organizador precisa ter entre 2 e 150 caracteres");
         }
 
         #endregion
