@@ -4,8 +4,4 @@
     <TargetFramework>netcoreapp1.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\src\Eventos.IO.Domain\Eventos.IO.Domain.csproj" />
-  </ItemGroup>
-
 </Project>
