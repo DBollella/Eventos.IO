@@ -9,7 +9,7 @@ namespace ConsoleTesting
         {
             const int Valor = 0;
             var evento = new Evento(
-                     "Nome do Evento",
+                     "No",
                      DateTime.Now,
                      DateTime.Now,
                      true,

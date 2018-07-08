@@ -1,4 +1,5 @@
 ﻿using Eventos.IO.Domain.Core.Models;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace Eventos.IO.Domain.Models
 {
-    public class Evento : Entity
+    public class Evento : Entity<Evento>
     {
         public Evento(
             string nome,
@@ -25,22 +26,6 @@ namespace Eventos.IO.Domain.Models
             Valor = valor;
             Online = online;
             NomeEmpresa = nomeEmpresa;
-
-            ErrosValidacao = new Dictionary<string, string>();
-
-            if (nome.Length < 3)
-                ErrosValidacao.Add("Name", "O nome do evento deve ter mais que tres caracteres.");
-
-            if (gratuito && valor != 0)
-                ErrosValidacao.Add("valor", "Para evento gratuito o valor deve ser maior que zero.");           
-
-            if (!EhValido())
-            {
-                foreach (var erro in ErrosValidacao)
-                {
-                    Console.WriteLine(erro);
-                }
-            }
         }
 
         public string Nome { get; private set; }
@@ -56,10 +41,55 @@ namespace Eventos.IO.Domain.Models
         public ICollection<Tags> Tags { get; private set; }
         public Endereco Endereco { get; private set; }
         public Organizador Organizador { get; private set; }
-        public Dictionary<string, string> ErrosValidacao { get; private set; }
 
-        public bool EhValido() {
-            return !ErrosValidacao.Any();
+        public override bool EhValido()
+        {
+            Validar();
+            return false;
         }
+
+        #region Validaçoes
+
+        private void Validar()
+        {
+            ValidarNome();
+            ValidarValor();
+        }
+
+
+        private void ValidarNome()
+        {
+            RuleFor(c => c.Nome)
+                .NotEmpty().WithMessage("O nome do evento precisa ser fornecido")
+                .Length(2, 150).WithMessage("O nome do evento precisa ter entre 2 e 150 caracteres");
+        }
+        private void ValidarValor()
+        {
+            if (!Gratuito)
+            {
+                RuleFor(c => c.Valor)
+                    .ExclusiveBetween(1, 50000)
+                    .WithMessage("O valor deve estar entre 1 e 50.000");
+            }
+            else
+            {
+                RuleFor(c => c.Valor)
+                    .ExclusiveBetween(0, 0).When(e => e.Gratuito)
+                    .WithMessage("O valor não deve ser diferente de 0 para um evento gratuito");
+            }
+            
+        }
+        private void ValidarData()
+        {
+            RuleFor(c => c.DataInicio)
+                .GreaterThan(c => c.DataFim)
+                .WithMessage("A data de inicio deve ser maior que a data do final do evento");
+
+            RuleFor(c => c.DataInicio)
+                .LessThan(DateTime.Now)
+                .WithMessage("A data de inicio não deve ser menor que a data atual");
+        }
+
+        #endregion
     }
 }
