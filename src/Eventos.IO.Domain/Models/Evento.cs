@@ -45,7 +45,7 @@ namespace Eventos.IO.Domain.Models
         public override bool EhValido()
         {
             Validar();
-            return false;
+            return ValidationResult.IsValid;
         }
 
         #region Validaçoes
@@ -56,8 +56,8 @@ namespace Eventos.IO.Domain.Models
             ValidarValor();
             ValidarLocal();
             ValidarNomeEmpresa();
+            ValidationResult = Validate(this);
         }
-
 
         private void ValidarNome()
         {
@@ -77,7 +77,7 @@ namespace Eventos.IO.Domain.Models
             else
             {
                 RuleFor(c => c.Valor)
-                    .ExclusiveBetween(0, 0).When(e => e.Gratuito)
+                    .Equal(0).When(e => e.Gratuito)
                     .WithMessage("O valor não deve ser diferente de 0 para um evento gratuito");
             }
             
@@ -86,12 +86,12 @@ namespace Eventos.IO.Domain.Models
         private void ValidarData()
         {
             RuleFor(c => c.DataInicio)
-                .GreaterThan(c => c.DataFim)
-                .WithMessage("A data de inicio deve ser maior que a data do final do evento");
+                .LessThan(c => c.DataFim)
+                .WithMessage("A data de início deve ser maior que a data do final do evento");
 
             RuleFor(c => c.DataInicio)
-                .LessThan(DateTime.Now)
-                .WithMessage("A data de inicio não deve ser menor que a data atual");
+                .GreaterThan(DateTime.Now)
+                .WithMessage("A data de início não deve ser menor que a data atual");
         }
 
         private void ValidarLocal()
@@ -113,6 +113,8 @@ namespace Eventos.IO.Domain.Models
                     .NotEmpty().WithMessage("O nome do organizador precisa ser fornecido")
                     .Length(2, 150).WithMessage("O nome do organizador precisa ter entre 2 e 150 caracteres");
         }
+
+
 
         #endregion
     }

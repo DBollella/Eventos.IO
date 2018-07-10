@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Eventos.IO.Domain.Core.Models
 {
@@ -10,13 +7,13 @@ namespace Eventos.IO.Domain.Core.Models
     {
         protected Entity()
         {
-            ValidationResult = new ValidationResult("");
+            ValidationResult = new FluentValidation.Results.ValidationResult();
         }
 
         public Guid Id { get; protected set; }
 
         public abstract bool EhValido();
-        public ValidationResult ValidationResult { get; protected set; }
+        public FluentValidation.Results.ValidationResult ValidationResult { get; protected set; }
 
         public override bool Equals(object obj)
         {
